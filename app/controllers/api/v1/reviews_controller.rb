@@ -10,6 +10,15 @@ class  Api::V1::ReviewsController < ApplicationController
     end
   end
 
+  def update 
+    @review = Review.find(params[:id])
+    if @review.update(review_params) 
+      render json: ReviewSerializer.new(@review).serializable_hash
+    else
+      render json: @review.errors, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     @review = Review.find(params[:id])
     if @review.destroy 
