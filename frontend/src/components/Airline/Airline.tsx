@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Header from "./Header";
 import ReviewFormValidation from "./ReviewFormValidation";
 import Review from "./Review";
+import UpdateReview from "./UpdateReview";
 
 interface RouteParams{
   slug: string;
@@ -11,6 +12,7 @@ interface RouteParams{
 
 const Airline = () => {
   const [errors, setErrors] = useState([]);
+  const[state, setState] = useState(0)
 
   const [airline, setAirline]= useState({ id: 0,
     type: "airline",
@@ -56,10 +58,6 @@ const Airline = () => {
     const handleDestroy = (id: number) => {
       axios.delete(`http://localhost:3000/api/v1/reviews/${id}`)
       .then((res)=>{
-        // const included = [...reviews]
-        // const index = included.findIndex( (data) => data.id == id )
-        // included.splice(index, 1)
-        // setReviews(included)
         setReviews(reviews.filter((data) => data.id !== id))
 
       })
@@ -84,30 +82,65 @@ const Airline = () => {
           setErrors(err.message);
       })}
 
+
+      const handleUpdate = (data: any, id: number) =>{
+        const assignedReview = {
+          title: data.title,
+          description: data.description,
+          score: data.score,
+          airline_id: parseInt(airline.id)
+        
+        }
+        axios.put(`http://localhost:3000/api/v1/reviews/${id}`, (assignedReview))
+        .then((res) => {
+          const newReviews = reviews.filter(review=>review.id!==res.data.data.id)
+          const included = [...newReviews, res.data.data]
+          setReviews(included)
+          setState(0)     
+        })
+        .catch(err=>{
+            setErrors(err.message);
+        })}
+
+      const handleState = (id: number)=>{
+        // console.log('test')
+        setState(id)
+      }
+
       const reviewsShow = reviews.map((item)=>{
         return(
-          <Review 
-          id={item.id}
-          attributes={item.attributes}
-          handleDestroy={handleDestroy}
-          />
+          <div key={item.id}>
+            {item.id !== state && 
+            (<Review 
+              id={item.id}
+              attributes={item.attributes}
+              handleDestroy={handleDestroy}
+              handleEdit={handleState}
+            />)}
+            {item.id === state && 
+            <UpdateReview  
+              id={item.id}
+              attributes={item.attributes} 
+              onSubmit={(data)=> handleUpdate(data, item.id)} 
+            />}
+          </div>
         )
       })
 
       const avgg_score= (reviews.reduce((a,v) =>  a = a + v.attributes.score, 0 )/reviews.length).toFixed(2)
 
-
   return (
     <>
       {loaded &&
-        <div className="wrapper">
+        <div className="wrapper" key={airline.id}>
           <div className="column">
             <Header attributes={airline.attributes} avgg_score={avgg_score}/>
           </div>
           {reviewsShow}
           <br/>
           <div className="reviews">
-            <ReviewFormValidation onSubmit={(data)=>handleSubmit(data)}
+            <ReviewFormValidation 
+            onSubmit={(data)=>handleSubmit(data)} 
             />
           </div>
         </div>

@@ -25,7 +25,7 @@ interface Props{
   }
 const Airline = ({airline}: Props) => {
   return (
-    <div className='card'>
+    <div className='card' key={airline.id}>
       <div className='airline-logo'>
         <img src={airline.attributes.image_url} alt={airline.attributes.name}/>
       </div>

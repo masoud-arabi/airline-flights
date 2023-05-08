@@ -6,8 +6,9 @@ interface Props{
         title: string,
     }
     handleDestroy:(id: number)=>void
+    handleEdit:(id: number)=>void
 }
-const Review = ({id, attributes, handleDestroy}: Props) => {
+const Review = ({id, attributes, handleEdit, handleDestroy}: Props) => {
   return (
     <div className='card'>
         <div className='wrapper-container' key={id}>
@@ -23,7 +24,9 @@ const Review = ({id, attributes, handleDestroy}: Props) => {
             </div>
            
             <button onClick={()=>handleDestroy(id)}>delete</button>
-
+            
+            <button onClick={()=>handleEdit(id)}>edit</button>
+            {/* <Link to={`/reviews/${id}`}>edit</Link> */}
         </div>
     </div>
   )
