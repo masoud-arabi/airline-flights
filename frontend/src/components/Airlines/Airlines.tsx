@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Airline from '../Airlines/Airline';
 
-// interface Props{
+interface Props{
+  // token: string;
 //     airlines:{
 //         id: number,
 //         type: string,
@@ -23,7 +24,8 @@ import Airline from '../Airlines/Airline';
 //         },
 //     }[];
 
-// }
+}
+
 const API_URL = "http://localhost:3000/api/v1/airlines"
 
 const Airlines = () => {
@@ -45,12 +47,16 @@ const Airlines = () => {
         </li>
         )
     )
-        
+        const onLogout = () => localStorage.clear()
   return (
     <div className='home'>
         <div className='header'>
             <h1>Open flights</h1>
             <div className='subheader'>Honest, unbaised airlines</div>
+            <button onClick={onLogout}>logout</button>
+            <Link to={`/login`}>login</Link>
+            <Link to={`/sigup`}>sigup</Link>
+
         </div>
         <div className='grid'>
             <ul>{list}</ul>

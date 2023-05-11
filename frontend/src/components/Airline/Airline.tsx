@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Header from "./Header";
 import ReviewFormValidation from "./ReviewFormValidation";
 import Review from "./Review";
@@ -10,9 +10,14 @@ interface RouteParams{
   slug: string;
 }
 
+
+
 const Airline = () => {
   const [errors, setErrors] = useState([]);
   const[state, setState] = useState(0)
+  const[auth, setAuth] = useState(false)
+
+
 
   const [airline, setAirline]= useState({ id: 0,
     type: "airline",
@@ -49,14 +54,21 @@ const Airline = () => {
             setAirline(res.data.data);
             setReviews(res.data.included);
             setLoaded(true)
-
+            console.log(auth)
+            if(localStorage.token){
+              const res = JSON.parse(atob(localStorage.token.split(".")[1])).exp * 100 < Date.now()
+              setAuth(res)
+            }else{
+              setAuth(false)
+            }
+            console.log(auth)
           }
         }).catch(err=>err.message);
         return ()=>{(mounted = false)};
       }, []);
 
     const handleDestroy = (id: number) => {
-      axios.delete(`http://localhost:3000/api/v1/reviews/${id}`)
+      axios.delete(`http://localhost:3000/api/v1/reviews/${id}`, {headers: {authorization: localStorage.token}})
       .then((res)=>{
         setReviews(reviews.filter((data) => data.id !== id))
 
@@ -79,19 +91,20 @@ const Airline = () => {
         setReview({title: '', description: '',score: 0, airline_id: 0})
       })
       .catch(err=>{
-          setErrors(err.message);
+        setErrors(err.message);
       })}
-
-
+      
+      
       const handleUpdate = (data: any, id: number) =>{
         const assignedReview = {
           title: data.title,
           description: data.description,
           score: data.score,
           airline_id: parseInt(airline.id)
-        
+          
         }
-        axios.put(`http://localhost:3000/api/v1/reviews/${id}`, (assignedReview))
+        console.log(localStorage.token)
+        axios.put(`http://localhost:3000/api/v1/reviews/${id}`, (assignedReview), {headers: {authorization: localStorage.token}})
         .then((res) => {
           const newReviews = reviews.filter(review=>review.id!==res.data.data.id)
           const included = [...newReviews, res.data.data]
@@ -106,12 +119,13 @@ const Airline = () => {
         // console.log('test')
         setState(id)
       }
-
+     
       const reviewsShow = reviews.map((item)=>{
         return(
           <div key={item.id}>
             {item.id !== state && 
             (<Review 
+              auth={auth}
               id={item.id}
               attributes={item.attributes}
               handleDestroy={handleDestroy}
