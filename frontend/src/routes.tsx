@@ -1,12 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Airlines from './components/Airlines/Airlines';
 import Airline from './components/Airline/Airline';
-import UpdateReview from './components/Airline/UpdateReview';
+import Login from './components/Screens/Login'
+import Signup from './components/Screens/Signup';
+import { useState } from 'react';
 
 const router = createBrowserRouter([
   { path: "/", element: <Airlines /> },
-  { path: "/airlines/:slug", element: <Airline /> },
-  // { path: "/airlines/:slug/reviews/:id", element: <UpdateReview /> },
+  { path: "/airlines/:slug", element: <Airline/> },
+  {path: "/login", element: <Login />},
+  {path: "/signup", element: <Signup />}
   ]);
 
 export default router;

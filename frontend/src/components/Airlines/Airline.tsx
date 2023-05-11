@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom';
 
 interface Props{
+  // token: string;
       airline:{
           id: number,
           type: string,

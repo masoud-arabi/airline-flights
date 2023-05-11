@@ -1,5 +1,7 @@
 class  Api::V1::ReviewsController < ApplicationController
   # protect_from_forgery with: :null_session
+  before_action :check_login, only: %i[update destroy]
+
   
   def create
     @review = airline.reviews.new(review_params)

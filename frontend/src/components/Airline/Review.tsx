@@ -1,4 +1,5 @@
 interface Props{
+    auth: boolean;
     id: number;
     attributes:{
         score: number,
@@ -8,7 +9,7 @@ interface Props{
     handleDestroy:(id: number)=>void
     handleEdit:(id: number)=>void
 }
-const Review = ({id, attributes, handleEdit, handleDestroy}: Props) => {
+const Review = ({auth, id, attributes, handleEdit, handleDestroy}: Props) => {
   return (
     <div className='card'>
         <div className='wrapper-container' key={id}>
@@ -23,9 +24,9 @@ const Review = ({id, attributes, handleEdit, handleDestroy}: Props) => {
 
             </div>
            
-            <button onClick={()=>handleDestroy(id)}>delete</button>
+            {auth && <button onClick={()=>handleDestroy(id)}>delete</button>}
             
-            <button onClick={()=>handleEdit(id)}>edit</button>
+            {auth && <button onClick={()=>handleEdit(id)}>edit</button>}
             {/* <Link to={`/reviews/${id}`}>edit</Link> */}
         </div>
     </div>
