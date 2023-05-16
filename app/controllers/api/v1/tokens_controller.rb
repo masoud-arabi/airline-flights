@@ -1,7 +1,6 @@
 class Api::V1::TokensController < ApplicationController
   def login
     @user = User.find_by_email(params[:email])
-
     if @user&.authenticate(params[:password])
       time = Time.now + 24.hours.to_i
       token = JsonWebToken.encode(user_id: @user.id)

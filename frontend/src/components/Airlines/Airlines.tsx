@@ -55,7 +55,7 @@ const Airlines = () => {
             <div className='subheader'>Honest, unbaised airlines</div>
             <button onClick={onLogout}>logout</button>
             <Link to={`/login`}>login</Link>
-            <Link to={`/sigup`}>sigup</Link>
+            <Link to={`/signup`}>signup</Link>
 
         </div>
         <div className='grid'>
