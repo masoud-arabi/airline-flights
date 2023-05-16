@@ -4,9 +4,8 @@ import axios from 'axios';
 import { Navigate, redirect, useNavigate } from 'react-router-dom';
 import LoginForm from './LoginForm';
 import Airlines from '../Airlines/Airlines';
-
 const schema = z.object({
-  email: z.string().min(3).max(50),
+  email: z.string().min(3).max(50).regex(new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)),
   password: z.number()
 })
 
@@ -20,7 +19,7 @@ type LoginFormData = z.infer<typeof schema>;
 const Login = () => {
         const [email, setEmail] = useState('');
         const [token, setToken] = useState('');
-        const [authenticated, setAuthenticated] = useState(false);
+        const [error, setError] = useState('');
 
 
         
@@ -36,12 +35,26 @@ const Login = () => {
                         localStorage.setItem('token', res.data.token);
                         localStorage.setItem('exp', res.data.expired_at);
                         localStorage.setItem('email', res.data.email);
-                    }).catch(err=>err.message);
+                    }).catch(err=>{
+                        console.log(err)
+
+                        if(err.request.status == 0){
+                            setError('network error')
+                        }else if(err.response.status == 401){
+                            setError('please check your email or password')
+                        }else if(!err.response){
+                                setError('no server response')
+                        }else{
+                            setError('somthing wrong')
+
+                        }
+                    });
                     
                 }
                 
                 return ( 
                     <>
+                    {error && <div>{error}</div>}
                     {token && <Navigate to="/" /> }               
                     {!token && <LoginForm onSubmit={(data: any)=>handleSubmit(data)} /> }               
                     </>

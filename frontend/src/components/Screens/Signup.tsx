@@ -1,52 +1,51 @@
-import { useForm } from 'react-hook-form';
-import {z} from 'zod';
-import {zodResolver} from '@hookform/resolvers/zod';
-
-const schema = z.object({
-  email: z.string().min(3).max(50),
-  password: z.number()
-})
-
-type LoginFormData = z.infer<typeof schema>;
-     
+import React, { useState } from 'react'
+import SignupForm from './SignupForm'
+import axios from 'axios';
+import { Navigate } from 'react-router-dom';
 
 
 const Signup = () => {
-    const {register, handleSubmit, reset, formState: { errors } } = useForm<LoginFormData>(
-        {resolver: zodResolver(schema)}); // now we can remove validation fron nfront od the value below.
-    const onSubmit =(data:LoginFormData)=>console.log('submited')
+    // const [email, setEmail] = useState('');
+    // const [password, setpassword] = useState('');
+    const [error, setError] = useState('');
+
+    const [isSignup, setIsSignup] = useState(false);
+
+
+    
+        const handleSubmit = (data: any)=>{
+            const assignedParams = {
+                user:{
+                    email: data.email,
+                    password: data.password
+                }
+              }
+              console.log()
+            console.log(data)
+            axios.post(`http://localhost:3000/api/v1/users`, assignedParams,)
+                .then(res=>{
+                    console.log(res.data)
+                    setIsSignup(true)
+                }).catch(err=>{
+                    console.log(err)
+                    if(!err.response){
+                        setError('no server response')
+                    }else if(err.response.status == 422){
+                        setError('user taken')
+                    }else if(err.response.status == 0){
+                        setError('netork error')
+                    }
+                });
+                
+            }
+            
 
   return (
-    <form onSubmit={handleSubmit(data=>{
-        onSubmit(data);
-        reset();
-        })}>
-        <div className="mb-3">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input
-              {...register('email')}
-              id='email' 
-              type="text" 
-              className="form-control" 
-              />
-        {errors.email && <p className='text-danger'>{errors.email.message}</p>}
-        </div>
-
-        <div className="mb-3">
-          <label htmlFor="password" className="form-label">password</label>
-          <input
-              {...register('password', {valueAsNumber: true})}     
-              id='password' 
-              type="text" 
-              className="form-control" 
-              />
-        {errors.password && <p className='text-danger'>{errors.password.message}</p>}
-        </div>
-       
-        <div className="mb-2">
-          <button className="">Submit</button>
-        </div>
-      </form>
+        <>  {error && <div>{error}</div>}
+            {isSignup && <Navigate to="/login" /> }               
+            {!isSignup && <SignupForm  onSubmit={(data)=>handleSubmit(data)}/> }               
+        </>
   )
 }
+
 export default Signup

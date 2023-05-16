@@ -3,7 +3,6 @@ import Airlines from './components/Airlines/Airlines';
 import Airline from './components/Airline/Airline';
 import Login from './components/Screens/Login'
 import Signup from './components/Screens/Signup';
-import { useState } from 'react';
 
 const router = createBrowserRouter([
   { path: "/", element: <Airlines /> },
