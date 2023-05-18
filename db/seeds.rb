@@ -1,41 +1,21 @@
-Airline.create([
-    { 
-      name: "United Airlines",
-      image_url: "https://open-flights.s3.amazonaws.com/United-Airlines.png"
-    }, 
-    { 
-      name: "Southwest",
-      image_url: "https://open-flights.s3.amazonaws.com/Southwest-Airlines.png"
-    },
-    { 
-      name: "Delta",
-      image_url: "https://open-flights.s3.amazonaws.com/Delta.png" 
-    }, 
-    { 
-      name: "Alaska Airlines",
-      image_url: "https://open-flights.s3.amazonaws.com/Alaska-Airlines.png" 
-    }, 
-    { 
-      name: "JetBlue",
-      image_url: "https://open-flights.s3.amazonaws.com/JetBlue.png" 
-    }, 
-    { 
-      name: "American Airlines",
-      image_url: "https://open-flights.s3.amazonaws.com/American-Airlines.png" 
-    }
-  ])
+array = %w[United-Airlines Southwest-Airlines Delta Alaska-Airlines Southwest-Airlines JetBlue American-Airlines]
 
-  reviews = Review.create([
-    {
-        title: 'Great Airline',
-        description: 'i had a good time.',
-        score: 5,
-        airline: Airline.first
-    },
-    {
-        title: 'good Airline',
-        description: 'good time there',
-        score: 3,
-        airline: Airline.second
+100.times do 
+  airline = Airline.create(
+    { 
+      name: Faker::Company.name,
+      image_url: "https://open-flights.s3.amazonaws.com/#{array.sample}.png"
     }
-  ])
+  )
+
+  (1..5).to_a.sample.times do
+    Review.create(
+      {
+          title: Faker::ProgrammingLanguage.name,
+          description: Faker::Markdown.emphasis,
+          score: (1..5).to_a.sample,
+          airline: airline
+      }
+    )
+  end
+end
