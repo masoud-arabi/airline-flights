@@ -1,4 +1,5 @@
 class Api::V1::AirlinesController < ApplicationController
+  include Paginable
   before_action :find_airline, only: [:show, :update, :destroy]
   
   def show
@@ -7,7 +8,8 @@ class Api::V1::AirlinesController < ApplicationController
   end
 
   def index
-    @airlines = Airline.all
+    @airlines = Airline.page(current_page).per(per_page)
+    options = get_links_serializer_options('api_v1_airlines_path', @airlines)
     render json: AirlineSerializer.new(@airlines, options).serializable_hash
   end
   
