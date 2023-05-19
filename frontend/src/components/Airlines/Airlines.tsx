@@ -3,10 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Airline from '../Airlines/Airline';
 import NewAirlineForm from './NewAirlineForm';
+import Pagination from './Pagination';
 
 const API_URL = "http://localhost:3000/api/v1/airlines"
 
 const Airlines = () => {
+    const [page, setPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
+    const [total, setTotal] = useState(0);
     const [errors, setErrors] = useState([]);
     const [airlines, setAirlines] = useState([
       { id: 0,
@@ -20,14 +24,16 @@ const Airlines = () => {
     const [newAirline, setNewAirline] = useState({});
     useEffect(()=>{
         let mounted = true; 
-        axios.get(API_URL).then(res=>{
+        // axios.get(`http://localhost:3000/api/v1/airlines`).then(res=>{
+        axios.get(`http://localhost:3000/api/v1/airlines?page=${page}&per_page=${perPage}`).then(res=>{
             if(mounted){
-                console.log(res.data.data)
+                console.log(res.data)
                 setAirlines(res.data.data);
+                setTotal(res.data.links.total)
               }
             }).catch(err=>err.message);
             return ()=>{(mounted = false)};
-          }, [airlines.length]);
+          }, [page]);
 
     const list = airlines.map(airline=>(
         <li key={airline.attributes.name}>
@@ -54,10 +60,34 @@ const Airlines = () => {
         setErrors(err.message);
       })}
 
-    const handleNewAirline = () => <NewAirlineForm onSubmit={(data) => console.log('test')} />
+    
+     const handleNextPage = ()=>{
+      setPage(page + 1)
+     }
+     const handlePrevPage = ()=>{
+      setPage(page - 1)
+     }
+     const handleFirstPage = ()=>{
+      setPage(1)
+     }
+     const handleLastPage = ()=>{
+      setPage(total/perPage)
+     }
 
+
+     const pagination =  (<Pagination 
+     currentPage={page}
+     handleNextPage={handleNextPage}
+     handlePrevPage={handlePrevPage}
+     totalPage={total/perPage}
+     handleLastPage={handleLastPage}
+     handleFirstPage={handleFirstPage}
+   />)
   return(
     <div className='home'>
+      <div>
+        {pagination}
+      </div>
         <div className='header'>
             <h1>Open flights</h1>
             <div className='subheader'>Honest, unbaised airlines</div>
@@ -65,12 +95,11 @@ const Airlines = () => {
             <Link to={`/login`}>login</Link>
             <Link to={`/signup`}>signup</Link>
             <Link to={`/airlines/new`}>Add New Airline</Link>
-            {/* <button onClick={()=><NewAirlineForm onSubmit={(data) => console.log('test')}/>}>Add New Airline</button> */}
-
         </div>
-        <div className='grid'>
-            <ul>{list}</ul>
-        </div>
+        {list}
+      <div>
+        {pagination}
+      </div>
     </div>
   )
   }
