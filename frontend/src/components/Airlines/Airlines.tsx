@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Airline from '../Airlines/Airline';
 import NewAirlineForm from './NewAirlineForm';
 import Pagination from './Pagination';
+import SearchForm from './SearchForm';
 
 const API_URL = "http://localhost:3000/api/v1/airlines"
 
@@ -12,6 +13,7 @@ const Airlines = () => {
     const [perPage, setPerPage] = useState(10);
     const [total, setTotal] = useState(0);
     const [errors, setErrors] = useState([]);
+    const [name, setName] = useState('');
     const [airlines, setAirlines] = useState([
       { id: 0,
         type: "airline",
@@ -25,7 +27,7 @@ const Airlines = () => {
     useEffect(()=>{
         let mounted = true; 
         // axios.get(`http://localhost:3000/api/v1/airlines`).then(res=>{
-        axios.get(`http://localhost:3000/api/v1/airlines?page=${page}&per_page=${perPage}`).then(res=>{
+        axios.get(`http://localhost:3000/api/v1/airlines?page=${page}&per_page=${perPage}&keyword=${name}`).then(res=>{
             if(mounted){
                 console.log(res.data)
                 setAirlines(res.data.data);
@@ -33,7 +35,7 @@ const Airlines = () => {
               }
             }).catch(err=>err.message);
             return ()=>{(mounted = false)};
-          }, [page]);
+          }, [page, name]);
 
     const list = airlines.map(airline=>(
         <li key={airline.attributes.name}>
@@ -79,10 +81,14 @@ const Airlines = () => {
      currentPage={page}
      handleNextPage={handleNextPage}
      handlePrevPage={handlePrevPage}
-     totalPage={total/perPage}
+     totalPage={Math.round(total/perPage)+1}
      handleLastPage={handleLastPage}
      handleFirstPage={handleFirstPage}
    />)
+
+   const handleSearchName = (data: any)=>{
+    setName(data.name)
+   }
   return(
     <div className='home'>
       <div>
@@ -95,6 +101,10 @@ const Airlines = () => {
             <Link to={`/login`}>login</Link>
             <Link to={`/signup`}>signup</Link>
             <Link to={`/airlines/new`}>Add New Airline</Link>
+            {name && <div >{name}
+            <button onClick={()=>setName('')}>X</button>
+            </div>}
+            <SearchForm onSubmit={(data)=>handleSearchName(data)}/>
         </div>
         {list}
       <div>
