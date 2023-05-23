@@ -8,7 +8,7 @@ class Api::V1::AirlinesController < ApplicationController
   end
 
   def index
-    @airlines = Airline.page(current_page).per(per_page)
+    @airlines = Airline.page(current_page).per(per_page).search(params)
     options = get_links_serializer_options('api_v1_airlines_path', @airlines)
     render json: AirlineSerializer.new(@airlines, options).serializable_hash
   end
